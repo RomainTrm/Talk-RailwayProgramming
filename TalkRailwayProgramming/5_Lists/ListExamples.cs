@@ -1,111 +1,85 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace TalkRailwayProgramming;
 
-namespace TalkRailwayProgramming;
-
-public static class ListExamples
+public static class Initial
 {
-    public record AccountLine(DateTime Date, Amount Amount)
+    public static Amount GetTotalAmountOfSuspiciousOperations(IReadOnlyList<MonthOperations> months)
     {
-        public AmountState EvaluateAmountState() => Amount.EvaluateAmountState();
-    }                       
-    
-    public enum AmountState { Valid, Suspicious }      
-    
-    public record Amount(decimal Value)
-    {
-        public static Amount Add(Amount left, Amount right) => new(left.Value + right.Value);
-        public static readonly Amount Zero = new(0m);     
-        public AmountState EvaluateAmountState() => Value > 10_000m ? AmountState.Suspicious : AmountState.Valid;
+        var allLines = GetAllLines(months);
+        var suspiciousOperationsPerMonths = GetSuspiciousOperations(allLines);
+        return GetTotalAmount(suspiciousOperationsPerMonths);                            
     }
     
-    public static class Initial
+    private static IEnumerable<AccountLine> GetAllLines(IEnumerable<MonthOperations> months)
     {
-        public static Amount GetTotalAmountOfSuspiciousOperations(IReadOnlyList<AccountLine> lines)
+        var result = new List<AccountLine>();
+        foreach (var month in months)
         {
-            var suspiciousOperations = GetSuspiciousOperations(lines);
-            return GetTotalAmount(suspiciousOperations);                            
-        }
-
-        private static IReadOnlyList<AccountLine> GetSuspiciousOperations(IReadOnlyList<AccountLine> lines)
-        {
-            var result = new List<AccountLine>();
-            foreach (var line in lines)
+            foreach (var line in month.AccountLines)
             {
-                if (line.EvaluateAmountState() == AmountState.Suspicious)
-                    result.Add(line);
+                result.Add(line);
             }
-            return result;
         }
+        return result;
+    }
 
-        private static Amount GetTotalAmount(IReadOnlyList<AccountLine> lines)
+    private static IEnumerable<AccountLine> GetSuspiciousOperations(IEnumerable<AccountLine> lines)
+    {
+        var result = new List<AccountLine>();
+        foreach (var line in lines)
         {
-            var total = Amount.Zero;
-            foreach (var line in lines)
-            {
-                total = Amount.Add(total, line.Amount);
-            }
-            return total;
+            if (line.EvaluateAmountState() == AmountState.Suspicious)
+                result.Add(line);
         }
+        return result;
+    }
+
+    private static Amount GetTotalAmount(IEnumerable<AccountLine> lines)
+    {
+        var total = Amount.Zero;
+        foreach (var line in lines)
+        {
+            var lineAmount = line.Amount;
+            total = Amount.Add(total, lineAmount);
+        }
+        return total;
+    }
+}
+
+// Same as initial, refactoring can be made only by using automated commands
+public static class Reworked
+{
+    public static Amount GetTotalAmountOfSuspiciousOperations(IReadOnlyList<MonthOperations> months)
+    {
+        var allLines = GetAllLines(months);
+        var suspiciousOperationsPerMonths = GetSuspiciousOperations(allLines);
+        return GetTotalAmount(suspiciousOperationsPerMonths);                            
     }
     
-    // Same as initial, refactoring can be made only by using Resharper commands
-    public static class Reworked
+    private static IEnumerable<AccountLine> GetAllLines(IEnumerable<MonthOperations> months)
     {
-        public static Amount GetTotalAmountOfSuspiciousOperations(IReadOnlyList<AccountLine> lines)
-        {
-            var suspiciousOperations = GetSuspiciousOperations(lines);
-            return GetTotalAmount(suspiciousOperations);                            
-        }
-
-        private static IReadOnlyList<AccountLine> GetSuspiciousOperations(IReadOnlyList<AccountLine> lines) =>
-            lines
-                .Where(line => line.EvaluateAmountState() == AmountState.Suspicious)
-                .ToList();                                                          
-
-        private static Amount GetTotalAmount(IReadOnlyList<AccountLine> lines) =>
-            lines
-                .Select(line => line.Amount)                                        
-                .Aggregate(Amount.Zero, Amount.Add);
+        return months.SelectMany(month => month.AccountLines).ToList();
     }
-    
-    // Same as Reworked, refactoring can be made only by using Resharper commands
-    public static class OneLiner
+
+    private static IEnumerable<AccountLine> GetSuspiciousOperations(IEnumerable<AccountLine> lines)
     {
-        public static Amount GetTotalAmountOfSuspiciousOperations(IReadOnlyList<AccountLine> lines)
-        {
-            return lines
-                .Where(line => line.EvaluateAmountState() == AmountState.Suspicious)
-                .Select(line => line.Amount)                                        
-                .Aggregate(Amount.Zero, Amount.Add);
-        }
+        return lines.Where(line => line.EvaluateAmountState() == AmountState.Suspicious).ToList();
     }
-    
-    public class ListExamplesTests
+
+    private static Amount GetTotalAmount(IEnumerable<AccountLine> lines)
     {
-        [Theory, MemberData(nameof(GetImplementations))]
-        [SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters", Justification = "Used to display test case name on test runner")]
-        public void SumSuspiciousAmounts(string testCase, Func<List<AccountLine>, Amount> getTotalAmountOfSuspiciousOperations)
-        {
-            var lines = new List<AccountLine>
-            {
-                new(DateTime.Today, new Amount(550.00m)),
-                new(DateTime.Today, new Amount(11200.50m)),
-                new(DateTime.Today, new Amount(1850.30m)),
-                new(DateTime.Today, new Amount(550.00m)),
-                new(DateTime.Today, new Amount(54320.10m))
-            };
+        return lines.Select(line => line.Amount).Aggregate(Amount.Zero, Amount.Add);
+    }
+}
 
-            var result = getTotalAmountOfSuspiciousOperations(lines);
-            
-            var expected = new Amount(65520.60m);
-            Assert.Equal(expected, result);
-        }
-
-        public static IEnumerable<object[]> GetImplementations() => new[]
-        {
-            new object[] { "Initial", Initial.GetTotalAmountOfSuspiciousOperations },
-            new object[] { "Reworked", Reworked.GetTotalAmountOfSuspiciousOperations },
-            new object[] { "OneLiner", OneLiner.GetTotalAmountOfSuspiciousOperations }
-        };
+// Same as Reworked, refactoring can be made only by using automated commands and removing useless iterations
+public static class OneLiner
+{
+    public static Amount GetTotalAmountOfSuspiciousOperations(IReadOnlyList<MonthOperations> months)
+    {
+        return months
+            .SelectMany(month => month.AccountLines)
+            .Where(line => line.EvaluateAmountState() == AmountState.Suspicious)
+            .Select(line => line.Amount)
+            .Aggregate(Amount.Zero, Amount.Add);                            
     }
 }
