@@ -3,49 +3,25 @@ namespace TalkRailwayProgramming._3_MakeExplicit;
 public class ExplicitDomainTests
 {
     [Theory]
-    [InlineData(1)]
-    [InlineData(5)]
-    [InlineData(12)]
-    public void ShouldFormatPositiveString(int value)
-    {
-        var result = ExplicitDomain.Format(value);
-
-        var expected = @$"""{value}"" is a positive value";
-        Assert.Equal(expected, result);
-    }
-
-    [Theory]
-    [InlineData(1)]
-    [InlineData(5)]
-    public void ShouldAcceptPositiveInt(int value)
-    {
-        var result = ExplicitDomain.EnsureIsPositive(value);
-        
-        var expected = new Ok<int, ExplicitDomain.Error>(value);
-        Assert.Equal(expected, result);
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-2)]
-    public void ShouldFailWhenNullOrNegativeString(int value)
-    {
-        var result = ExplicitDomain.EnsureIsPositive(value);
-        
-        var expected = new Error<int, ExplicitDomain.Error>(ExplicitDomain.Error.NotPositive);
-        Assert.Equal(expected, result);
-    }
-
-    [Theory]
-    [InlineData("5")]
     [InlineData("1")]
-    [InlineData("0")]
-    [InlineData("-5")]
-    public void ShouldConvertIntegerString(string value)
+    [InlineData("5")]
+    [InlineData("12")]
+    public void ShouldFormatPositiveString(string value)
     {
-        var result = ExplicitDomain.StringToInt(value);
+        var result = ExplicitDomain.FormatPositiveString(value);
 
-        var expected = new Ok<int, ExplicitDomain.Error>(int.Parse(value));
+        var expected = new Ok<string, ExplicitDomain.Error>(@$"""{value}"" is a positive value");
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData("0")]
+    [InlineData("-2")]
+    public void ShouldFailWhenNullOrNegativeString(string value)
+    {
+        var result = ExplicitDomain.FormatPositiveString(value);
+
+        var expected = new Error<string, ExplicitDomain.Error>(ExplicitDomain.Error.NotPositive);
         Assert.Equal(expected, result);
     }
 
@@ -55,9 +31,9 @@ public class ExplicitDomainTests
     [InlineData("1.5")]
     public void ShouldFailWhenNotAnIntegerString(string value)
     {
-        var result = ExplicitDomain.StringToInt(value);
+        var result = ExplicitDomain.FormatPositiveString(value);
 
-        var expected = new Error<int, ExplicitDomain.Error>(ExplicitDomain.Error.NotInteger);
+        var expected = new Error<string, ExplicitDomain.Error>(ExplicitDomain.Error.NotInteger);
         Assert.Equal(expected, result);
     }
 }
