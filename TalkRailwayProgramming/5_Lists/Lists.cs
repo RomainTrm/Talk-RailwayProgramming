@@ -1,8 +1,8 @@
-﻿namespace TalkRailwayProgramming;
+﻿namespace TalkRailwayProgramming._5_Lists;
 
-public record MonthOperations(int Month, int Year, List<AccountLine> AccountLines);
+public record MonthOperations(List<AccountLine> AccountLines);
     
-public record AccountLine(DateTime Date, Amount Amount)
+public record AccountLine(Amount Amount)
 {
     public AmountState EvaluateAmountState() => Amount.EvaluateAmountState();
 }                       

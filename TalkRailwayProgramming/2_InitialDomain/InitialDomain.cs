@@ -2,6 +2,13 @@
 
 public static class InitialDomain
 {
+    public static string FormatPositiveString(string value)
+    {
+        var integer = StringToInt(value);
+        EnsureIsPositive(integer);
+        return Format(integer); 
+    }
+
     private static int StringToInt(string value)
     {
         return int.TryParse(value, out int i)
@@ -18,12 +25,5 @@ public static class InitialDomain
     private static string Format(int value)
     {
         return @$"""{value}"" is a positive value";
-    }
-        
-    public static string FormatPositiveString(string value)
-    {
-        var integer = StringToInt(value);
-        EnsureIsPositive(integer);
-        return Format(integer); 
     }
 }

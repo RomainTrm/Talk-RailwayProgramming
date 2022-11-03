@@ -1,4 +1,6 @@
-﻿namespace TalkRailwayProgramming;
+﻿using TalkRailwayProgramming._3_MakeExplicit;
+
+namespace TalkRailwayProgramming;
 
 public static class ResultExtensions
 {

@@ -1,3 +1,5 @@
+using TalkRailwayProgramming._3_MakeExplicit;
+
 namespace TalkRailwayProgramming._6_RailwayProgramming;
 
 public class RailwayDomainTests

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace TalkRailwayProgramming;
+namespace TalkRailwayProgramming._5_Lists;
 
 public class ListsTests
 {
@@ -10,18 +10,18 @@ public class ListsTests
     {
         var months = new List<MonthOperations>
         {
-            new (DateTime.Today.AddMonths(-1).Month, DateTime.Today.AddMonths(-1).Year, new List<AccountLine>
+            new (new List<AccountLine>
             {
-                new(DateTime.Today, new Amount(220.30m)),
-                new(DateTime.Today, new Amount(13100.50m)) // Suspicious
+                new(new Amount(220.30m)),
+                new(new Amount(13100.50m)) // Suspicious
             }),
-            new (DateTime.Today.Month, DateTime.Today.Year, new List<AccountLine>
+            new (new List<AccountLine>
             {
-                new(DateTime.Today, new Amount(550.00m)),
-                new(DateTime.Today, new Amount(11200.50m)), // Suspicious
-                new(DateTime.Today, new Amount(1850.30m)),
-                new(DateTime.Today, new Amount(550.00m)),
-                new(DateTime.Today, new Amount(54320.10m)) // Suspicious
+                new(new Amount(550.00m)),
+                new(new Amount(11200.50m)), // Suspicious
+                new(new Amount(1850.30m)),
+                new(new Amount(550.00m)),
+                new(new Amount(54320.10m)) // Suspicious
             })
         };
 

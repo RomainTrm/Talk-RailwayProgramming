@@ -1,4 +1,4 @@
-﻿namespace TalkRailwayProgramming;
+﻿namespace TalkRailwayProgramming._3_MakeExplicit;
 
 public abstract record Option<TValue>
 {
