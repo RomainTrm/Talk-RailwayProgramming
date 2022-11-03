@@ -2,16 +2,22 @@
 
 namespace TalkRailwayProgramming._6_RailwayProgramming;
 
-public static class RailwayDomain
+public enum Error { NotInteger, NotPositive, UnknownValue }
+
+public class RailwayDomain
 {
-    public static Result<string, Error> FormatPositiveString(string value)
+    private readonly Func<int, Task<Option<string>>> _dependency;
+    public RailwayDomain(Func<int, Task<Option<string>>> dependency) => _dependency = dependency;
+
+    public async Task<Result<string, Error>> Run(int id)
     {
-        return StringToInt(value)
+        var value = await _dependency(id);
+        return value
+            .ToResult(() => Error.UnknownValue)
+            .Bind(StringToInt)
             .Bind(EnsureIsPositive)
             .Select(Format);
     }
-
-    public enum Error { NotInteger, NotPositive }
 
     private static Result<int, Error> StringToInt(string value)
     {

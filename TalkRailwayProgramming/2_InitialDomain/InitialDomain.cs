@@ -1,12 +1,23 @@
 ﻿namespace TalkRailwayProgramming._2_InitialDomain;
 
-public static class InitialDomain
+public class InitialDomain
 {
-    public static string FormatPositiveString(string value)
+    private readonly Func<int, Task<string>> _dependency;
+    public InitialDomain(Func<int, Task<string>> dependency) => _dependency = dependency;
+
+    public async Task<string> Run(int id)
     {
+        var value = await _dependency(id);
+        EnsureValueFound(value);
+        
         var integer = StringToInt(value);
         EnsureIsPositive(integer);
         return Format(integer); 
+    }
+
+    private static void EnsureValueFound(string value)
+    {
+        if (value is null) throw new InvalidOperationException("No value for this id");
     }
 
     private static int StringToInt(string value)

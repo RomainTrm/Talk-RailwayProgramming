@@ -1,11 +1,20 @@
 ﻿namespace TalkRailwayProgramming._3_MakeExplicit;
 
+public enum Error { NotInteger, NotPositive, UnknownValue }
+
 public class ExplicitDomain
 {
+    private readonly Func<int, Task<Option<string>>> _dependency;
+    public ExplicitDomain(Func<int, Task<Option<string>>> dependency) => _dependency = dependency;
+
     // Does compose poorly
-    public static Result<string, Error> FormatPositiveString(string value)
+    public async Task<Result<string, Error>> Run(int id)
     {
-        var integer = StringToInt(value);
+        var dependencyResult = await _dependency(id);
+        if (dependencyResult is None<string>) return new Error<string, Error>(Error.UnknownValue);
+
+        var dependencyResultValue = ((Some<string>)dependencyResult).Value;
+        var integer = StringToInt(dependencyResultValue);
         if (integer is Error<int, Error> errorInteger) return new Error<string, Error>(errorInteger.Value);
 
         var integerValue = ((Ok<int, Error>)integer).Value;
@@ -16,8 +25,6 @@ public class ExplicitDomain
         var formattedString = Format(positiveIntegerValue);
         return new Ok<string, Error>(formattedString); 
     }
-
-    public enum Error { NotInteger, NotPositive }
 
     private static Result<int, Error> StringToInt(string value)
     {

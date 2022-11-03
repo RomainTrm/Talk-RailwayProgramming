@@ -1,8 +1,6 @@
-using TalkRailwayProgramming._3_MakeExplicit;
+namespace TalkRailwayProgramming._3_MakeExplicit;
 
-namespace TalkRailwayProgramming._6_RailwayProgramming;
-
-public class RailwayDomainTests
+public class AlternativeExplicitDomainTests
 {
     private const int Id = 5;
     private static Func<int, Task<Option<string>>> BuildDependency(Option<string> expectedReturn)
@@ -14,7 +12,7 @@ public class RailwayDomainTests
     [InlineData("12")]
     public async Task ShouldFormatPositiveString(string value)
     {
-        var sut = new RailwayDomain(BuildDependency(new Some<string>(value)));
+        var sut = new AlternativeExplicitDomain(BuildDependency(new Some<string>(value)));
         var result = await sut.Run(Id);
 
         var expected = new Ok<string, Error>(@$"""{value}"" is a positive value");
@@ -24,7 +22,7 @@ public class RailwayDomainTests
     [Fact]
     public async Task ShouldFailWhenNoValueReturnedByDependency()
     {
-        var sut = new RailwayDomain(BuildDependency(new None<string>()));
+        var sut = new AlternativeExplicitDomain(BuildDependency(new None<string>()));
         var result = await sut.Run(Id);
 
         var expected = new Error<string, Error>(Error.UnknownValue);
@@ -36,7 +34,7 @@ public class RailwayDomainTests
     [InlineData("-2")]
     public async Task ShouldFailWhenNullOrNegativeString(string value)
     {
-        var sut = new RailwayDomain(BuildDependency(new Some<string>(value)));
+        var sut = new AlternativeExplicitDomain(BuildDependency(new Some<string>(value)));
         var result = await sut.Run(Id);
 
         var expected = new Error<string, Error>(Error.NotPositive);
@@ -49,7 +47,7 @@ public class RailwayDomainTests
     [InlineData("1.5")]
     public async Task ShouldFailWhenNotAnIntegerString(string value)
     {
-        var sut = new RailwayDomain(BuildDependency(new Some<string>(value)));
+        var sut = new AlternativeExplicitDomain(BuildDependency(new Some<string>(value)));
         var result = await sut.Run(Id);
         
         var expected = new Error<string, Error>(Error.NotInteger);

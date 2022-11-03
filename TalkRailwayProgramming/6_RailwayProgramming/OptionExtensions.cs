@@ -20,4 +20,9 @@ public static class OptionExtensions
         Func<TValue, Option<TTmp>> valueMorphism,
         Func<TValue, TTmp, TResult> resultMorphism)
         => option.Bind(value => valueMorphism(value).Select(tmp => resultMorphism(value, tmp)));
+
+    public static Result<TValue, TError> ToResult<TValue, TError>(this Option<TValue> option, Func<TError> onError)
+        => option.Match<Result<TValue, TError>>(
+            value => new Ok<TValue, TError>(value),
+            () => new Error<TValue, TError>(onError()));
 }
