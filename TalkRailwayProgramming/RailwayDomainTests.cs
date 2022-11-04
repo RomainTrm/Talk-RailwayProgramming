@@ -5,6 +5,8 @@ using TalkRailwayProgramming._6_RailwayProgramming;
 using TalkRailwayProgramming._7_Conclusion;
 using Error = TalkRailwayProgramming._3_MakeExplicit.Error;
 
+using Factory = System.Func<TalkRailwayProgramming._3_MakeExplicit.Option<string>, TalkRailwayProgramming._3_MakeExplicit.IExplicitDomain>;
+
 namespace TalkRailwayProgramming;
 
 [SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters", Justification = "Used to display test case name on test runner")]
@@ -18,7 +20,7 @@ public class RailwayDomainTests
         "12");
     
     [Theory, MemberData(nameof(HappyPathTestCases))]
-    public async Task ShouldFormatPositiveString(string implementationName, string value, Func<Option<string>, IExplicitDomain> factory)
+    public async Task ShouldFormatPositiveString(string implementationName, string value, Factory factory)
     {
         var sut = factory(new Some<string>(value));
         var result = await sut.Run(Id);
@@ -31,7 +33,7 @@ public class RailwayDomainTests
     public static IEnumerable<object[]> NoValueReturnedByDependencyTestCases() => GetImplementations().Select(x => new object[] { x.name, x.factory });
 
     [Theory, MemberData(nameof(NoValueReturnedByDependencyTestCases))]
-    public async Task ShouldFailWhenNoValueReturnedByDependency(string implementationName, Func<Option<string>, IExplicitDomain> factory)
+    public async Task ShouldFailWhenNoValueReturnedByDependency(string implementationName, Factory factory)
     {
         var sut = factory(new None<string>());
         var result = await sut.Run(Id);
@@ -46,7 +48,7 @@ public class RailwayDomainTests
         "-2");
 
     [Theory, MemberData(nameof(NullOrNegativeTestCases))]
-    public async Task ShouldFailWhenNullOrNegativeString(string implementationName, string value, Func<Option<string>, IExplicitDomain> factory)
+    public async Task ShouldFailWhenNullOrNegativeString(string implementationName, string value, Factory factory)
     {
         var sut = factory(new Some<string>(value));
         var result = await sut.Run(Id);
@@ -62,7 +64,7 @@ public class RailwayDomainTests
         "1.5");
 
     [Theory, MemberData(nameof(NotAnIntegerStringTestCases))]
-    public async Task ShouldFailWhenNotAnIntegerString(string implementationName, string value, Func<Option<string>, IExplicitDomain> factory)
+    public async Task ShouldFailWhenNotAnIntegerString(string implementationName, string value, Factory factory)
     {
         var sut = factory(new Some<string>(value));
         var result = await sut.Run(Id);
@@ -77,8 +79,8 @@ public class RailwayDomainTests
         from testCase in testCases
         select new[] { implementation.name, testCase, implementation.factory };
 
-    private static IEnumerable<(string name, Func<Option<string>, IExplicitDomain> factory)> GetImplementations() =>
-        new List<(string, Func<Option<string>, IExplicitDomain>)>
+    private static IEnumerable<(string name, Factory factory)> GetImplementations() =>
+        new List<(string, Factory)>
         {
             ("Explicit domain", input => new ExplicitDomain(_ => Task.FromResult(input))),
             ("Alternative explicit domain", input => new AlternativeExplicitDomain(_ => Task.FromResult(input))),
