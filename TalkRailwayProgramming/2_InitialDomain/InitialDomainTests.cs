@@ -1,3 +1,5 @@
+using FluentAssertions;
+
 namespace TalkRailwayProgramming._2_InitialDomain;
 
 public class InitialDomainTests
@@ -16,7 +18,7 @@ public class InitialDomainTests
         var result = await sut.Run(Id);
 
         var expected = @$"""{value}"" is a positive value";
-        Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -25,8 +27,9 @@ public class InitialDomainTests
         var sut = new InitialDomain(BuildDependency(null));
         var exception = await Record.ExceptionAsync(() => sut.Run(Id));
 
-        Assert.IsType<InvalidOperationException>(exception);
-        Assert.Equal("No value for this id", exception.Message);
+        exception.Should().BeOfType<InvalidOperationException>()
+            .Which
+            .Message.Should().Be("No value for this id");
     }
 
     [Theory]
@@ -37,8 +40,9 @@ public class InitialDomainTests
         var sut = new InitialDomain(BuildDependency(value));
         var exception = await Record.ExceptionAsync(() => sut.Run(Id));
 
-        Assert.IsType<InvalidOperationException>(exception);
-        Assert.Equal("Input is not a positive integer", exception.Message);
+        exception.Should().BeOfType<InvalidOperationException>()
+            .Which
+            .Message.Should().Be("Input is not a positive integer");
     }
 
     [Theory]
@@ -50,7 +54,8 @@ public class InitialDomainTests
         var sut = new InitialDomain(BuildDependency(value));
         var exception = await Record.ExceptionAsync(() => sut.Run(Id));
 
-        Assert.IsType<InvalidOperationException>(exception);
-        Assert.Equal("Input string is not an integer", exception.Message);
+        exception.Should().BeOfType<InvalidOperationException>()
+            .Which
+            .Message.Should().Be("Input string is not an integer");
     }
 }

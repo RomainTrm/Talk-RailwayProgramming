@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 
 namespace TalkRailwayProgramming._5_Lists;
 
@@ -28,7 +29,7 @@ public class ListsTests
         var result = getTotalAmountOfSuspiciousOperations(months);
             
         var expected = new Amount(13100.50m + 11200.50m + 54320.10m);
-        Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
 
     public static IEnumerable<object[]> GetImplementations() => new[]

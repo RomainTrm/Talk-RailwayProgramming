@@ -1,3 +1,4 @@
+using FluentAssertions;
 using TalkRailwayProgramming._3_MakeExplicit;
 
 namespace TalkRailwayProgramming._6_RailwayProgramming;
@@ -18,7 +19,7 @@ public class RailwayDomainTests
         var result = await sut.Run(Id);
 
         var expected = new Ok<string, Error>(@$"""{value}"" is a positive value");
-        Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -28,7 +29,7 @@ public class RailwayDomainTests
         var result = await sut.Run(Id);
 
         var expected = new Error<string, Error>(Error.UnknownValue);
-        Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
 
     [Theory]
@@ -40,7 +41,7 @@ public class RailwayDomainTests
         var result = await sut.Run(Id);
 
         var expected = new Error<string, Error>(Error.NotPositive);
-        Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
 
     [Theory]
@@ -53,6 +54,6 @@ public class RailwayDomainTests
         var result = await sut.Run(Id);
         
         var expected = new Error<string, Error>(Error.NotInteger);
-        Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
 }
