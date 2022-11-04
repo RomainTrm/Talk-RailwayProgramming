@@ -1,8 +1,6 @@
 ﻿namespace TalkRailwayProgramming._3_MakeExplicit;
 
-public enum Error { NotInteger, NotPositive, UnknownValue }
-
-public class ExplicitDomain
+public class ExplicitDomain : IExplicitDomain
 {
     private readonly Func<int, Task<Option<string>>> _dependency;
     public ExplicitDomain(Func<int, Task<Option<string>>> dependency) => _dependency = dependency;

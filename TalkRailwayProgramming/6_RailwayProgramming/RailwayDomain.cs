@@ -2,9 +2,7 @@
 
 namespace TalkRailwayProgramming._6_RailwayProgramming;
 
-public enum Error { NotInteger, NotPositive, UnknownValue }
-
-public class RailwayDomain
+public class RailwayDomain : IExplicitDomain
 {
     private readonly Func<int, Task<Option<string>>> _dependency;
     public RailwayDomain(Func<int, Task<Option<string>>> dependency) => _dependency = dependency;

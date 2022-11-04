@@ -2,9 +2,7 @@
 
 namespace TalkRailwayProgramming._7_Conclusion;
 
-public enum Error { NotInteger, NotPositive, UnknownValue }
-
-public class ComputationExample
+public class ComputationExample : IExplicitDomain
 {
     private readonly Func<int, Task<Option<string>>> _dependency;
     public ComputationExample(Func<int, Task<Option<string>>> dependency) => _dependency = dependency;

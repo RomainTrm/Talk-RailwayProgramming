@@ -1,6 +1,6 @@
 ﻿namespace TalkRailwayProgramming._3_MakeExplicit;
 
-public class AlternativeExplicitDomain
+public class AlternativeExplicitDomain : IExplicitDomain
 {
     private readonly Func<int, Task<Option<string>>> _dependency;
     public AlternativeExplicitDomain(Func<int, Task<Option<string>>> dependency) => _dependency = dependency;
