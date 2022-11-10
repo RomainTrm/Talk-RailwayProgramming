@@ -1,4 +1,7 @@
-﻿namespace TalkRailwayProgramming.MaitreD.Initial;
+﻿// ReSharper disable SuggestVarOrType_BuiltInTypes
+// ReSharper disable SuggestVarOrType_SimpleTypes
+// ReSharper disable SuggestVarOrType_Elsewhere
+namespace TalkRailwayProgramming.MaitreD.Initial;
 #nullable disable
 
 public class MaitreD
@@ -10,10 +13,9 @@ public class MaitreD
     public async Task RegisterReservation(RegisterReservationCommand command)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
-        var reservation = CreateReservation(command.At, command.Email, command.Quantity, command.Name);
+        IReadOnlyCollection<Reservation> reservations = await _repository.ReadReservations(command.At);
 
-        var reservations = await _repository.ReadReservations(command.At);
-        
+        Reservation reservation = CreateReservation(command.At, command.Email, command.Quantity, command.Name);
         EnsureEnoughSeatsAvailable(reservations, command.Quantity);
 
         await _repository.Create(reservation);
@@ -31,7 +33,7 @@ public class MaitreD
 
     private static void EnsureEnoughSeatsAvailable(IReadOnlyCollection<Reservation> reservations, int quantity)
     {
-        var reservedSeats = reservations.Sum(r => r.Quantity);
+        int reservedSeats = reservations.Sum(r => r.Quantity);
         if (MaxCapacity < reservedSeats + quantity)
             throw new InvalidOperationException("Not enough seats available");
     }

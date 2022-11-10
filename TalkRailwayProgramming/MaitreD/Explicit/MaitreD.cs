@@ -1,4 +1,7 @@
-﻿namespace TalkRailwayProgramming.MaitreD.Explicit;
+﻿// ReSharper disable SuggestVarOrType_BuiltInTypes
+// ReSharper disable SuggestVarOrType_SimpleTypes
+// ReSharper disable SuggestVarOrType_Elsewhere
+namespace TalkRailwayProgramming.MaitreD.Explicit;
 #nullable enable
 
 public class MaitreD
@@ -9,15 +12,15 @@ public class MaitreD
 
     public async Task<Result<Unit, Errors>> RegisterReservation(RegisterReservationCommand command)
     {
-        var reservationResult = CreateReservation(command.At, command.Email, command.Quantity, command.Name);
+        IReadOnlyCollection<Reservation> reservations = await _repository.ReadReservations(command.At);
+        
+        Result<Reservation, Errors> reservationResult = CreateReservation(command.At, command.Email, command.Quantity, command.Name);
         if (reservationResult is Error<Reservation, Errors> reservationError) return new Error<Unit, Errors>(reservationError.Value);
-        var reservation = ((Ok<Reservation, Errors>)reservationResult).Value;
+        Reservation reservation = ((Ok<Reservation, Errors>)reservationResult).Value;
         
-        var reservations = await _repository.ReadReservations(command.At);
-        
-        var validationResult = EnsureEnoughSeatsAvailable(reservations, reservation);
+        Result<Reservation, Errors> validationResult = EnsureEnoughSeatsAvailable(reservations, reservation);
         if (validationResult is Error<Reservation, Errors> validationError) return new Error<Unit, Errors>(validationError.Value);
-        var validatedReservation = ((Ok<Reservation, Errors>)validationResult).Value;
+        Reservation validatedReservation = ((Ok<Reservation, Errors>)validationResult).Value;
         
         await _repository.Create(validatedReservation);
         
@@ -31,17 +34,17 @@ public class MaitreD
         if (quantity < 1)
             return new Error<Reservation, Errors>(Errors.InvalidQuantity);
 
-        var nameValue = name.Match(
+        string nameValue = name.Match(
             some => some,
             () => string.Empty);
         
-        var reservation = new Reservation(at, email, quantity, nameValue);
+        Reservation reservation = new Reservation(at, email, quantity, nameValue);
         return new Ok<Reservation, Errors>(reservation);
     }
 
     private static Result<Reservation, Errors> EnsureEnoughSeatsAvailable(IReadOnlyCollection<Reservation> reservations, Reservation reservation)
     {
-        var reservedSeats = reservations.Sum(r => r.Quantity);
+        int reservedSeats = reservations.Sum(r => r.Quantity);
         if (MaxCapacity < reservedSeats + reservation.Quantity)
             return new Error<Reservation, Errors>(Errors.NotEnoughSeats);
         return new Ok<Reservation, Errors>(reservation);

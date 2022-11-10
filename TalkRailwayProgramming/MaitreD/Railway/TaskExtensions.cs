@@ -18,4 +18,13 @@ public static class TaskExtensions
                 return Task.FromResult<Result<TResult, TError>>(error);
             });
     }
+
+    public static Task DoAsync<TValue, TError>(
+        this Result<TValue, TError> result,
+        Func<TValue, Task> action)
+    {
+        return result.Match(
+            ok: value => action(value),
+            error: _ => Task.CompletedTask);
+    }
 }
