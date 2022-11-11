@@ -7,55 +7,57 @@ public class MaitreDShould
     [Fact]
     public async Task RegisterReservationWithoutName()
     {
-        var fakeRepository = new FakeRepository();
-        var sut = new MaitreD(fakeRepository);
+        var spyRepository = new SpyRepository();
+        var sut = new MaitreD(spyRepository);
 
         var command = new RegisterReservationCommand(DateTime.Today, "mark@example.com", 5, new None<string>());
         var result = await sut.RegisterReservation(command);
 
         result.Should().Be(new Ok<Unit, Errors>(new Unit()));
         var expectedReservation = new Reservation(DateTime.Today, "mark@example.com", 5, "");
-        fakeRepository.CreatedReservation.Should().Be(expectedReservation);
+        spyRepository.CreatedReservation.Should().Be(expectedReservation);
     }
     
     [Fact]
     public async Task RegisterReservationWithName()
     {
-        var fakeRepository = new FakeRepository();
-        var sut = new MaitreD(fakeRepository);
+        var spyRepository = new SpyRepository();
+        var sut = new MaitreD(spyRepository);
 
         var command = new RegisterReservationCommand(DateTime.Today, "mark@example.com", 5, new Some<string>("Mark"));
         var result = await sut.RegisterReservation(command);
 
         result.Should().Be(new Ok<Unit, Errors>(new Unit()));
         var expectedReservation = new Reservation(DateTime.Today, "mark@example.com", 5, "Mark");
-        fakeRepository.CreatedReservation.Should().Be(expectedReservation);
+        spyRepository.CreatedReservation.Should().Be(expectedReservation);
     }
     
     [Fact]
     public async Task FailWhenNotEnoughSeats()
     {
-        var fakeRepository = new FakeRepository(
+        var spyRepository = new SpyRepository(
             new Reservation(DateTime.Today, "bob@example.com", 2, "Bob"),
             new Reservation(DateTime.Today, "alice@example.com", 6, "Alice"));
-        var sut = new MaitreD(fakeRepository);
+        var sut = new MaitreD(spyRepository);
 
         var command = new RegisterReservationCommand(DateTime.Today, "mark@example.com", 4, new Some<string>("Mark"));
         var result = await sut.RegisterReservation(command);
 
-        result.Should().Be(new Error<Unit, Errors>(Errors.NotEnoughSeats));
+        var expected = new Error<Unit, Errors>(Errors.NotEnoughSeats);
+        result.Should().Be(expected);
     }
     
     [Fact]
     public async Task FailWhenEmailIsMissing()
     {
-        var fakeRepository = new FakeRepository();
-        var sut = new MaitreD(fakeRepository);
+        var spyRepository = new SpyRepository();
+        var sut = new MaitreD(spyRepository);
 
         var command = new RegisterReservationCommand(DateTime.Today, "", 4, new Some<string>("Mark"));
         var result = await sut.RegisterReservation(command);
 
-        result.Should().Be(new Error<Unit, Errors>(Errors.InvalidEmail));
+        var expected = new Error<Unit, Errors>(Errors.InvalidEmail);
+        result.Should().Be(expected);
     }
     
     [Theory]
@@ -64,20 +66,21 @@ public class MaitreDShould
     [InlineData(0)]
     public async Task FailWhenQuantityIsLowerThan1(int quantity)
     {
-        var fakeRepository = new FakeRepository();
-        var sut = new MaitreD(fakeRepository);
+        var spyRepository = new SpyRepository();
+        var sut = new MaitreD(spyRepository);
 
         var command = new RegisterReservationCommand(DateTime.Today, "mark@example.com", quantity, new Some<string>("Mark"));
         var result = await sut.RegisterReservation(command);
 
-        result.Should().Be(new Error<Unit, Errors>(Errors.InvalidQuantity));
+        var expected = new Error<Unit, Errors>(Errors.InvalidQuantity);
+        result.Should().Be(expected);
     }
 }
 
-public class FakeRepository : IRepository
+public class SpyRepository : IRepository
 {
     private readonly IReadOnlyCollection<Reservation> _reservations;
-    public FakeRepository(params Reservation[] reservations) => _reservations = reservations;
+    public SpyRepository(params Reservation[] reservations) => _reservations = reservations;
 
     public Reservation? CreatedReservation { get; private set; }
 

@@ -1,6 +1,4 @@
-﻿namespace TalkRailwayProgramming.Lists;
-
-public record MonthOperations(List<AccountLine> AccountLines);
+﻿namespace TalkRailwayProgramming.Talk;
     
 public record AccountLine(Amount Amount)
 {
@@ -16,21 +14,24 @@ public record Amount(decimal Value)
     public AmountState EvaluateAmountState() => Value > 10_000m ? AmountState.Suspicious : AmountState.Valid;
 }
 
+
+
+
 public static class Lists
 {
-    public static Amount GetTotalAmountOfSuspiciousOperations(IReadOnlyList<MonthOperations> months)
+    public static Amount GetTotalAmountOfSuspiciousOperations(IReadOnlyList<IReadOnlyList<AccountLine>> months)
     {
         var allLines = GetAllLines(months);
         var suspiciousOperationsPerMonths = GetSuspiciousOperations(allLines);
         return GetTotalAmount(suspiciousOperationsPerMonths);                            
     }
     
-    private static IEnumerable<AccountLine> GetAllLines(IEnumerable<MonthOperations> months)
+    private static IEnumerable<AccountLine> GetAllLines(IEnumerable<IReadOnlyList<AccountLine>> months)
     {
         var result = new List<AccountLine>();
         foreach (var month in months)
         {
-            foreach (var line in month.AccountLines)
+            foreach (var line in month)
             {
                 result.Add(line);
             }

@@ -1,7 +1,7 @@
 ﻿// ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable SuggestVarOrType_Elsewhere
-namespace TalkRailwayProgramming.Initial;
+namespace TalkRailwayProgramming.Talk;
 #nullable disable
 
 public class MaitreD
@@ -39,6 +39,19 @@ public class MaitreD
 }
 
 public sealed record RegisterReservationCommand(DateTime At, string Email, int Quantity, string Name);
+
+
+
+
+
+
+
+public enum Errors { NotEnoughSeats, InvalidQuantity, InvalidEmail }
+
+
+
+
+
 public sealed record Reservation(DateTime At, string Email, int Quantity, string Name);
 
 public interface IRepository
