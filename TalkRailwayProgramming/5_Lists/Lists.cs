@@ -1,4 +1,4 @@
-﻿namespace TalkRailwayProgramming._5_Lists;
+﻿namespace TalkRailwayProgramming.Lists;
 
 public record MonthOperations(List<AccountLine> AccountLines);
     

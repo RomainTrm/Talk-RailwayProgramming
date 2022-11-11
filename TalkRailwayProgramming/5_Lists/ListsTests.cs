@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 
-namespace TalkRailwayProgramming._5_Lists;
+namespace TalkRailwayProgramming.Lists;
 
 public class ListsTests
 {

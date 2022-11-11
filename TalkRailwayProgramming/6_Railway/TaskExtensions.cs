@@ -1,4 +1,4 @@
-﻿namespace TalkRailwayProgramming.MaitreD.Railway;
+﻿namespace TalkRailwayProgramming.Railway;
 
 public static class TaskExtensions
 {

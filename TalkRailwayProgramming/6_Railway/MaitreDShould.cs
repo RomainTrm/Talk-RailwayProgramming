@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 
-namespace TalkRailwayProgramming.MaitreD.Railway;
+namespace TalkRailwayProgramming.Railway;
 
 public class MaitreDShould
 {

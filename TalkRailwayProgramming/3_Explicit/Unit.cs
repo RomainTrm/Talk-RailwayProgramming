@@ -1,3 +1,3 @@
-﻿namespace TalkRailwayProgramming.MaitreD.Explicit;
+﻿namespace TalkRailwayProgramming.Explicit;
 
 public record Unit;

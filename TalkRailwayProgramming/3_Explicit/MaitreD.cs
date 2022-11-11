@@ -1,7 +1,7 @@
 ﻿// ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable SuggestVarOrType_Elsewhere
-namespace TalkRailwayProgramming.MaitreD.Explicit;
+namespace TalkRailwayProgramming.Explicit;
 #nullable enable
 
 public class MaitreD
