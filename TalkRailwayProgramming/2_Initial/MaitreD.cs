@@ -13,9 +13,9 @@ public class MaitreD
     public async Task RegisterReservation(RegisterReservationCommand command)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
-        IReadOnlyCollection<Reservation> reservations = await _repository.ReadReservations(command.At);
-
         Reservation reservation = CreateReservation(command.At, command.Email, command.Quantity, command.Name);
+
+        IReadOnlyCollection<Reservation> reservations = await _repository.ReadReservations(command.At);
         EnsureEnoughSeatsAvailable(reservations, command.Quantity);
 
         await _repository.Create(reservation);

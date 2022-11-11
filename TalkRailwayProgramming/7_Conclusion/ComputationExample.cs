@@ -1,17 +1,11 @@
-﻿using TalkRailwayProgramming._3_MakeExplicit;
+﻿namespace TalkRailwayProgramming.Conclusion;
 
-namespace TalkRailwayProgramming._7_Conclusion;
-
-public class ComputationExample : IExplicitDomain
+public class ComputationExample
 {
-    private readonly Func<int, Task<Option<string>>> _dependency;
-    public ComputationExample(Func<int, Task<Option<string>>> dependency) => _dependency = dependency;
-
-    public async Task<Result<string, Error>> Run(int id)
+    public static Result<string, Error> Run(Option<string> optionalString)
     {
-        var value = await _dependency(id);
         return
-            from stringValue in value.ToResult(() => Error.UnknownValue)
+            from stringValue in optionalString.ToResult(() => Error.UnknownValue)
             from integer in StringToInt(stringValue)
             from positiveInteger in EnsureIsPositive(integer)
             let formattedString = Format(positiveInteger)
@@ -36,4 +30,6 @@ public class ComputationExample : IExplicitDomain
     {
         return @$"""{value}"" is a positive value";
     }
+    
+    public enum Error { NotInteger, NotPositive, UnknownValue }
 }

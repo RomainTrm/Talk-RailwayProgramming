@@ -1,7 +1,7 @@
 ﻿// ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable SuggestVarOrType_Elsewhere
-namespace TalkRailwayProgramming.MaitreD.Railway;
+namespace TalkRailwayProgramming.MaitreD.Explicit;
 #nullable enable
 
 public class MaitreD
@@ -12,19 +12,19 @@ public class MaitreD
 
     public async Task<Result<Unit, Errors>> RegisterReservation(RegisterReservationCommand command)
     {
-        // IO
+        Result<Reservation, Errors> reservationResult = CreateReservation(command.At, command.Email, command.Quantity, command.Name);
+        if (reservationResult is Error<Reservation, Errors> reservationError) return new Error<Unit, Errors>(reservationError.Value);
+        Reservation reservation = ((Ok<Reservation, Errors>)reservationResult).Value;
+
         IReadOnlyCollection<Reservation> reservations = await _repository.ReadReservations(command.At);
-
-        // Pure
-        Result<Reservation, Errors> reservationResult = 
-            CreateReservation(command.At, command.Email, command.Quantity, command.Name)
-            .Bind(reservation => EnsureEnoughSeatsAvailable(reservations, reservation));
-
-        // IO
-        await reservationResult.DoAsync(_repository.Create);
         
-        // Pure
-        return reservationResult.Map(_ => new Unit());
+        Result<Reservation, Errors> validationResult = EnsureEnoughSeatsAvailable(reservations, reservation);
+        if (validationResult is Error<Reservation, Errors> validationError) return new Error<Unit, Errors>(validationError.Value);
+        Reservation validatedReservation = ((Ok<Reservation, Errors>)validationResult).Value;
+        
+        await _repository.Create(validatedReservation);
+        
+        return new Ok<Unit, Errors>(new Unit());
     }
 
     private static Result<Reservation, Errors> CreateReservation(DateTime at, string email, int quantity, Option<string> name)
