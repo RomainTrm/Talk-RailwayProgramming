@@ -23,6 +23,13 @@ public sealed record Error<TValue, TError>(TError Value) : Result<TValue, TError
         => error(Value);
 }
 
+
+
+
+
+
+
+
 public static class ResultExtensions
 {
     public static Result<TResult, TError> Map<TValue, TResult,TError>(

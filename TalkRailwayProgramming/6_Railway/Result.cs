@@ -1,4 +1,4 @@
-﻿namespace TalkRailwayProgramming;
+﻿namespace TalkRailwayProgramming.Railway;
 
 public abstract record Result<TValue, TError>
 {

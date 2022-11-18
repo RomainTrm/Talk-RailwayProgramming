@@ -1,6 +1,6 @@
 ﻿namespace TalkRailwayProgramming.Conclusion;
 
-public class ComputationExample
+public static class ComputationExample
 {
     public static Result<string, Error> Run(Option<string> optionalString)
     {
