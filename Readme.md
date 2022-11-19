@@ -6,7 +6,9 @@
 
 Concepts presented in this repository are techno-agnostic. Those may be idiomatic to the programming language you're used to. Whether they are already integrated or not, they remain easy to code.  
 
-If you're familiar with Theory Category, you must know those concepts have specific names (functors, monads...). We chose on purpose to not use them during our talk as it is not a course about monads.   
+If you're familiar with Theory Category, you must know those concepts have specific names (functors, monads...). We chose on purpose to not use them during our talk as it is not a course about monads.  
+
+Implementations shown in this repository are just one of the many ways of coding such concepts.
 
 ## 2. Initial domain
 
@@ -14,13 +16,47 @@ We use as example codebase the MaitreD kata often used by [Mark Seemann](https:/
 It is a simple API used to validate and register reservations for a restaurant.  
 
 When looking at signatures, we can guess the presence of some side effects (usage of `Task` and `void`), but without further details.  
-This is symptomatic, to know all possible behaviors, you have to either:
+This is symptomatic, to know all possible behaviors, we have to either:
 - open and read code
-- run tests against the system to explore behaviors
+- run tests against the system
 
-You may have missed this, but the name of the reservation is optional.  
+You may have missed this, but the name of the reservation is optional : `name ?? ""`.  
 
 ## 3. Make it explicit
+
+### Optional values
+
+We can explicit optional values with a dedicated type `Option<T>`/`Maybe<T>`.  
+This way, `RegisterReservationCommand` constructor signature evolves from:  
+`(DateTime At, string Email, int Quantity, string Name)`  
+to   
+`(DateTime At, string Email, int Quantity, Option<string> Name)`.
+
+### Errors
+
+To explicit possible errors, we use the `Result<TValue, TError>` type, replacing exceptions with an `Error<TValue, TError>(TError Value)`.    
+
+As we're now using `Result`, we have to specify a return type for the happy path, even for methods that were returning `void` or `Task` (an asynchronous operation without any return).
+To do so, we used the `Unit` type, it's just an empty type with structural equality that act as a placeholder.  
+
+Public signature is now: `Task<Result<Unit, Errors>> RegisterReservation(RegisterReservationCommand command)`.  
+Note, error path are now easier to test as we're not trying to catch exceptions, rather comparing results thanks to structural equality.   
+
+### Composition issues
+
+Initial version of the domain was many focus on happy path. Now we've explicit errors, we're now facing composition issues.  
+We must either:
+- extract and return the error
+- extract the value and continue processing
+
+For now, we'll use an imperative solution, easy enough to understand even if it's rather disappointing and it adds a lot of noise into our code.  
+It takes the following form:  
+```C#
+Result<xxx, Errors> xxxResult = ...
+
+if (xxxResult is Error<xxx, Errors> xxxError) return new Error<Unit, Errors>(xxxError.Value);
+var xxx = ((Ok<xxx, Errors>)xxxResult).Value;
+```
 
 ## 4. Interlude: lists
 
