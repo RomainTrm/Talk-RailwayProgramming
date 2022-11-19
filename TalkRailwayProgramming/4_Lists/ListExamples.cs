@@ -59,7 +59,7 @@ public static class Initial
     }
 }
 
-// Same as initial, refactoring can be made only by using automated commands
+// Same as initial, refactoring can be made only by using automated IDE commands
 public static class Reworked
 {
     public static Amount GetTotalAmountOfSuspiciousOperations(IReadOnlyList<IReadOnlyList<AccountLine>> months)

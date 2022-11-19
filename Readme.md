@@ -1,6 +1,4 @@
-# Railway Programming: la voie vers un code plus honnête
-
-**Railway programming: the path toward a more honest code**
+# Railway programming: the path toward a more honest code
 
 ## 1. Introduction
 
@@ -44,7 +42,7 @@ Note, error path are now easier to test as we're not trying to catch exceptions,
 
 ### Composition issues
 
-Initial version of the domain was many focus on happy path. Now we've explicit errors, we're now facing composition issues.  
+Initial version of the domain was many focus on happy path. Now we've explicit errors, we're facing composition issues.  
 We must either:
 - extract and return the error
 - extract the value and continue processing
@@ -60,6 +58,23 @@ var xxx = ((Ok<xxx, Errors>)xxxResult).Value;
 
 ## 4. Interlude: lists
 
+As mentioned on part 3, we're facing issues to manipulate content of types like `Result<TValue, TError>`.  
+Fortunately, there is a generic type we're used to which have solved similar issues: lists.  
+
+To manipulate them, we're used to the basic and universal building block: `for loops`. But those are kinda noisy, and tend to mix iteration logic with relevant domain logic (as we did with results on previous part).  
+That's why most languages/frameworks now includes dedicated methods that abstracts iteration logic and only requires domain logic as input. Here's some examples:
+- `map`, `Select`
+- `filter`, `Where`
+- `bind`, `flatMap`, `SelectMany`
+- `reduce`, `fold`, `Aggregate`
+- etc...
+
+Now, let's think:   
+- Isn't the `Option` type just a list containing either nothing or exactly one element?
+- `Result` isn't the same as `Option`, just replacing empty with another dedicated value? 
+
+So, if such methods exists for lists, we may manage to code them for `Option` and `Result`.
+
 ## 5. Railway programming
 
 ## 6. Conclusions
@@ -72,6 +87,7 @@ var xxx = ((Ok<xxx, Errors>)xxxResult).Value;
 - [Railway Oriented Programming](https://fsharpforfunandprofit.com/rop/)
 
 ### Mark Seemann's blog posts
+- [Mark's Twitter](https://twitter.com/ploeh)
 - [Asynchronous Injection](https://blog.ploeh.dk/2019/02/11/asynchronous-injection/)
 - [Impureim sandwich](https://blog.ploeh.dk/2020/03/02/impureim-sandwich/)
 
