@@ -77,6 +77,84 @@ So, if such methods exists for lists, we may manage to code them for `Option` an
 
 ## 5. Railway programming
 
+Railway programming is a metaphor popularized by [Scott Wlaschin](https://twitter.com/ScottWlaschin).  
+In this metaphor, pure methods are represented as railways.  
+
+A simple function is represented as a simple line:  
+```text
+'T1 -Method-> 'T2
+```
+
+And you can link railways to compose functions:
+```text
+'T1 -Method-> 'T2 -Method-> 'T3 
+```
+
+Some methods have diverging return types that can be represented as two different paths/railways (`Option`/`Result`):  
+```text
+'T1 -Method-> Ok 'T2            --Happy path
+         \
+          \-> Error 'TError     --Error path
+```
+
+### Map
+
+But how to compose? 
+```text
+'T1 -Method1-> Ok 'T2           and       'T2 -Method2-> 'T3
+          \
+           \-> Error 'TError
+```
+
+We have a mismatch between `Ok 'T2` as output of `Method1` and `'T2` as input of `Method2`. Also we have no behavior specified if an error is returned by `Method1`.  
+This is the role of `map` method to transform 
+```text
+'T2 -Method2-> 'T3  
+```
+to 
+```text
+Ok 'T2 -------Method2-> Ok 'T3
+
+Error 'TError --------> Error 'TError
+```
+
+Then we can compose
+```text
+'T1 -Method1-> Ok 'T2 --------> map Method2-> Ok 'T3
+          \
+           \-> Error 'TError ---------------> Error 'TError 
+```
+
+### Bind
+
+But how to compose?
+```text
+'T1 -Method1-> Ok 'T2           and       'T2 -Method2-> Ok 'T3
+          \                                         \
+           \-> Error 'TError                         \-> Error 'TError
+```
+
+We have a mismatch between `Ok 'T2` as output of `Method1` and `'T2` as input of `Method2`. Also we have no behavior specified if an error is returned by `Method1`.  
+This is the role of `bind` method to transform
+```text
+'T2 -Method2-> Ok 'T3  
+          \
+           \-> Error 'TError
+```
+to
+```text
+Ok 'T2 -------Method2-> Ok 'T3
+                   \
+Error 'TError --------> Error 'TError
+```
+
+Then we can compose
+```text
+'T1 -Method1-> Ok 'T2 --------> bind Method2-> Ok 'T3
+          \                               \
+           \-> Error 'TError ----------------> Error 'TError 
+```
+
 ## 6. Conclusions
 
 ## Resources
@@ -93,3 +171,6 @@ So, if such methods exists for lists, we may manage to code them for `Option` an
 
 ### To go further on theory
 - [Théorie des Categories: vous la connaissez déjà (French)](https://youtu.be/DFZ7arg1XFc)
+
+
+[^1]: fdsfds
