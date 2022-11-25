@@ -155,7 +155,41 @@ Then we can compose
            \-> Error 'TError ----------------> Error 'TError 
 ```
 
+### Impureim sandwich
+
+We've just saw how to compose types like `List`, `Result` or `Option`. Unfortunately such types does compose poorly.    
+In our example we have such a case with `Result` and `Task`: the main method should return `Task<Result<Unit, Errors>>`, but at some point we want to apply a method to the value of a `Result`. It means we'll get a `Result<Task, Errors>`.   
+
+We want to invert these "container objects", to transform `Result<Task, 'TError>` to `Task<Result<Unit, 'TError>>`.  
+Here's two strategies (see`TaskExtensions.cs` for implementation details):  
+- specific to C# `Task<>` as dedicated keywords are available, a method `Task DoAsync(Result<'TValue, 'TError>, Func<'TValue, Task>)`
+- a more generic method `Task<Result<'TResult, 'TError>> Traverse<'TResult>(Result<'TValue, 'TError>, Func<'TValue, Task<'TResult>>)`
+
+Note the second method can be implemented for various types like `Result` and `List` or `Option` and `List`.  
+
+These methods tends to mitigate this issue. But there is another common strategy used by functional programmers: impureim sandwich.  
+The idea is to separate IO from Pure logic, and then to stack these "layers" of logic like a sandwich like 
+```text
+IO logic
+Pure logic
+IO logic
+```
+
+We follow this pattern in our final implementation.  
+
 ## 6. Conclusions
+
+We discussed how to:  
+- explicit with types details of the system (errors, mandatory/optional values)
+- how to solve composition issues 
+- how to deal with IO
+
+It may seems more complicated than the code you're used to, but with practice, basic composition issues turn to be natural and won't need too much attention.
+
+About errors: we would recommend you to distinct business errors from panic mode errors.    
+Use `Result` to return business errors or errors you're interested by. Exceptions are fine as a panic mode, like "database is unreachable for whatsoever reason", in such a case, you will not try to handle it as it is unrecoverable.  
+
+Some languages provides powerful idiomatic syntaxes known as "for comprehension" or "computation expression". You can see an example using linq syntax in `ComputationExample.cs`.  
 
 ## Resources
 
@@ -171,6 +205,3 @@ Then we can compose
 
 ### To go further on theory
 - [Théorie des Categories: vous la connaissez déjà (French)](https://youtu.be/DFZ7arg1XFc)
-
-
-[^1]: fdsfds
