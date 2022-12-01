@@ -2,13 +2,21 @@
 
 public static class ComputationExample
 {
-    public static Result<string, Error> Run(Option<string> optionalString)
+    public static Result<string, Error> RunWithBind(Option<string> optionalString)
+    {
+        return optionalString.ToResult(() => Error.UnknownValue)
+            .Bind(stringValue => StringToInt(stringValue).Select(integer => (stringValue, integer)))
+            .Bind(x => EnsureIsPositive(x.integer).Select(positiveInteger => (x.stringValue, positiveInteger)))
+            .Select(x => @$"""{x.stringValue}"" is a positive integer: {x.positiveInteger}");
+    }
+
+    public static Result<string, Error> RunComputation(Option<string> optionalString)
     {
         return
             from stringValue in optionalString.ToResult(() => Error.UnknownValue)
             from integer in StringToInt(stringValue)
             from positiveInteger in EnsureIsPositive(integer)
-            let formattedString = Format(positiveInteger)
+            let formattedString = @$"""{stringValue}"" is a positive integer: {positiveInteger}"
             select formattedString;
     }
 
@@ -26,10 +34,5 @@ public static class ComputationExample
             : new Error<int, Error>(Error.NotPositive);
     }
 
-    private static string Format(int value)
-    {
-        return @$"""{value}"" is a positive value";
-    }
-    
     public enum Error { NotInteger, NotPositive, UnknownValue }
 }
