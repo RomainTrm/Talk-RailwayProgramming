@@ -22,7 +22,7 @@ public class MaitreD
         if (validationResult is Error<Reservation, Errors> validationError) return new Error<Unit, Errors>(validationError.Value);
         Reservation validatedReservation = ((Ok<Reservation, Errors>)validationResult).Value;
         
-        await _repository.Create(validatedReservation);
+        await _repository.Register(validatedReservation);
         
         return new Ok<Unit, Errors>(new Unit());
     }
@@ -59,5 +59,5 @@ public sealed record Reservation(DateTime At, string Email, int Quantity, string
 public interface IRepository
 {
     Task<IReadOnlyCollection<Reservation>> ReadReservations(DateTime date);
-    Task Create(Reservation reservation);
+    Task Register(Reservation reservation);
 }

@@ -24,7 +24,7 @@ public class MaitreD
         return await reservationResult
             .Traverse(async reservation =>
             {
-                await _repository.Create(reservation);
+                await _repository.Register(reservation);
                 return new Unit();
             });
     }
@@ -61,5 +61,5 @@ public sealed record Reservation(DateTime At, string Email, int Quantity, string
 public interface IRepository
 {
     Task<IReadOnlyCollection<Reservation>> ReadReservations(DateTime date);
-    Task Create(Reservation reservation);
+    Task Register(Reservation reservation);
 }
