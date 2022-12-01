@@ -17,7 +17,7 @@ public class MaitreD
         IReadOnlyCollection<Reservation> reservations = await _repository.ReadReservations(command.At);
         EnsureEnoughSeatsAvailable(reservations, reservation);
 
-        await _repository.Create(reservation);
+        await _repository.Register(reservation);
     }
 
     private static Reservation CreateReservation(DateTime at, string email, int quantity, string name)
@@ -57,5 +57,5 @@ public sealed record Reservation(DateTime At, string Email, int Quantity, string
 public interface IRepository
 {
     Task<IReadOnlyCollection<Reservation>> ReadReservations(DateTime date);
-    Task Create(Reservation reservation);
+    Task Register(Reservation reservation);
 }

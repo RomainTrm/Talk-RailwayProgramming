@@ -165,7 +165,7 @@ public class SpyRepository : IRepository
         return Task.FromResult(_reservations);
     }
 
-    public Task Create(Reservation reservation)
+    public Task Register(Reservation reservation)
     {
         CreatedReservation = reservation;
         return Task.CompletedTask;

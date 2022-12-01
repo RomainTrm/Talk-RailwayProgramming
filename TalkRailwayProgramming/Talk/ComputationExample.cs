@@ -2,13 +2,21 @@
 
 public static class ComputationExample
 {
-    public static Result<string, Error> Run(Option<string> optionalString)
+    public static Result<string, Error> RunWithBind(Option<string> optionalString)
+    {
+        return optionalString.ToResult(() => Error.UnknownValue)
+            .bind(stringValue => StringToInt(stringValue).Select(integer => (stringValue, integer)))
+            .bind(x => EnsureIsPositive(x.integer).Select(positiveInteger => (x.stringValue, positiveInteger)))
+            .Select(x => @$"""{x.stringValue}"" is a positive integer: {x.positiveInteger}");
+    }
+    
+    public static Result<string, Error> RunComputation(Option<string> optionalString)
     {
         return
             from stringValue in optionalString.ToResult(() => Error.UnknownValue)
             from integer in StringToInt(stringValue)
             from positiveInteger in EnsureIsPositive(integer)
-            let formattedString = Format(positiveInteger)
+            let formattedString = @$"""{stringValue}"" is a positive integer: {positiveInteger}"
             select formattedString;
     }
 
@@ -26,11 +34,6 @@ public static class ComputationExample
             : new Error<int, Error>(Error.NotPositive);
     }
 
-    private static string Format(int value)
-    {
-        return @$"""{value}"" is a positive value";
-    }
-    
     public enum Error { NotInteger, NotPositive, UnknownValue }
 }
 
@@ -43,7 +46,7 @@ public static class ResultComputationExtensions
             ok => new Ok<TResult, TError>(morphism(ok)),
             error => new Error<TResult, TError>(error));
 
-    private static Result<TResult, TError> Bind<TValue, TResult, TError>(
+    public static Result<TResult, TError> bind<TValue, TResult, TError>(
         this Result<TValue, TError> result,
         Func<TValue, Result<TResult, TError>> morphism)
         => result.Match(
@@ -55,7 +58,7 @@ public static class ResultComputationExtensions
         this Result<TValue, TError> result,
         Func<TValue, Result<TTmp, TError>> valueMorphism,
         Func<TValue, TTmp, TResult> resultMorphism)
-        => Bind(result, value => valueMorphism(value).Select(tmp => resultMorphism(value, tmp)));
+        => bind(result, value => valueMorphism(value).Select(tmp => resultMorphism(value, tmp)));
     
     public static Result<TValue, TError> ToResult<TValue, TError>(this Option<TValue> option, Func<TError> onError)
         => option.Match<Result<TValue, TError>>(
